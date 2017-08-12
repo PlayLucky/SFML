@@ -8,7 +8,7 @@ sf::Vector2i dimensions(800, 600);
 // Values for Spirograph
 float ring = 105;
 float wheel = 63;
-float hole = 1;
+float hole = 10;
 
 int paletteIndex = 0;
 
@@ -200,7 +200,7 @@ sf::Vector2f getRotatedVector(sf::RectangleShape shape, int point) {
 }
 
 void updateLines(std::vector<sf::RectangleShape>& lines) {
-  wheel *= 2;
+  //wheel *= 2;
   lines[0].setSize(sf::Vector2f((ring-wheel) * lengthMultiplier, lineWidth));
   lines[1].setSize(sf::Vector2f(wheel * lengthMultiplier, lineWidth));
   lines[2].setSize(sf::Vector2f(-hole * lengthMultiplier, lineWidth));
