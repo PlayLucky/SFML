@@ -8,22 +8,22 @@ sf::Vector2i dimensions(800, 600);
 // Values for Spirograph
 float ring = 105;
 float wheel = 63;
-float hole = 10;
+float hole = 5;
 
 int paletteIndex = 0;
 
 std::vector<sf::Color> palette = {
-  sf::Color(33, 60, 132),
-  sf::Color(48, 88, 188),
-  sf::Color(195, 175, 227),
-  sf::Color(108, 86, 169),
-  sf::Color(230, 102, 175),
-  sf::Color(200, 85, 96),
-  sf::Color(236, 102, 93),
-  sf::Color(235, 73, 63),
-  sf::Color(208, 128, 91),
-  sf::Color(234, 180, 159),
-  sf::Color(237, 211, 83)
+  sf::Color(33, 60, 132, 10),
+  sf::Color(48, 88, 188, 10),
+  sf::Color(195, 175, 227, 10),
+  sf::Color(108, 86, 169, 10),
+  sf::Color(230, 102, 175, 10),
+  sf::Color(200, 85, 96, 10),
+  sf::Color(236, 102, 93, 10),
+  sf::Color(235, 73, 63, 10),
+  sf::Color(208, 128, 91, 10),
+  sf::Color(234, 180, 159, 10),
+  sf::Color(237, 211, 83, 10)
 };
 
 sf::Color fgColor = palette[paletteIndex];
@@ -34,7 +34,7 @@ sf::Color fxColor = sf::Color(200, 200, 200);
 float lineWidth = 2;
 
 // Change speed with mouse wheel
-float speed = 30;
+float speed = 180;
 float speedStep = 5;
 float maxSpeed = 360;
 
@@ -48,12 +48,7 @@ void drawCircleOutline(sf::RenderWindow& window, int x, int y, float r, sf::Colo
 int main() {
   lengthMultiplier = (dimensions.y/2 - 1)/ring;
   // Pixelarray for drawn pixels
-  sf::VertexArray pixels(sf::Points);
-  for(int y = 0; y < dimensions.y; y++) {
-    for(int x = 0; x < dimensions.x; x++) {
-      pixels.append(sf::Vertex(sf::Vector2f(x, y), bgColor));
-    }
-  }
+  sf::VertexArray paint(sf::TrianglesStrip);
 
   // Create window
   sf::RenderWindow window(sf::VideoMode(dimensions.x, dimensions.y), "Spirograph");
@@ -115,24 +110,28 @@ int main() {
               std::cin >> wheel;
               std::cin >> hole;
               updateLines(lines);
+              break;
             }
             case sf::Keyboard::R:
             {
               std::cout << "Please input: ring" << std::endl;
               std::cin >> ring;
               updateLines(lines);
+              break;
             }
             case sf::Keyboard::W:
             {
               std::cout << "Please input: wheel" << std::endl;
               std::cin >> ring;
               updateLines(lines);
+              break;
             }
             case sf::Keyboard::H:
             {
               std::cout << "Please input: hole" << std::endl;
               std::cin >> hole;
               updateLines(lines);
+              break;
             }
             case sf::Keyboard::C:
             {
@@ -140,6 +139,7 @@ int main() {
               int r, g, b;
               std::cin >> r >> g >> b;
               fgColor = sf::Color(r, g, b);
+              break;
             }
             case sf::Keyboard::N:
               fgColor = palette[++paletteIndex];
@@ -148,7 +148,6 @@ int main() {
               break;
             default: break;
           }
-          // Default for other events
         default:
           break;
       }
@@ -167,16 +166,19 @@ int main() {
     }
     if(speed != 0) {
       sf::Vector2f pos = getRotatedVector(lines.back(), 1);
-      pixels[int(pos.y)*(dimensions.x) + int(pos.x)].color = fgColor;
+      paint.append(sf::Vertex(sf::Vector2f(pos.x-3, pos.y), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x+3, pos.y), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y-3), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y+3), fgColor));
     }
 
     // RENDER
 
     // Fill the window with background color
-    window.clear();
+    window.clear(bgColor);
 
     // Draw each line
-    window.draw(pixels);
+    window.draw(paint);
     if(linesVisible) {
       window.draw(lines[1]);
       sf::Vector2f pos(getRotatedVector(lines[1], 0));
@@ -200,10 +202,10 @@ sf::Vector2f getRotatedVector(sf::RectangleShape shape, int point) {
 }
 
 void updateLines(std::vector<sf::RectangleShape>& lines) {
-  //wheel *= 2;
+  float hole_temp = hole * 2.3;
   lines[0].setSize(sf::Vector2f((ring-wheel) * lengthMultiplier, lineWidth));
   lines[1].setSize(sf::Vector2f(wheel * lengthMultiplier, lineWidth));
-  lines[2].setSize(sf::Vector2f(-hole * lengthMultiplier, lineWidth));
+  lines[2].setSize(sf::Vector2f(-hole_temp * lengthMultiplier, lineWidth));
 }
 
 void drawCircleOutline(sf::RenderWindow& window, int x, int y, float r, sf::Color color) {
