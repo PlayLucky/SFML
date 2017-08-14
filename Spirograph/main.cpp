@@ -8,22 +8,22 @@ sf::Vector2i dimensions(800, 600);
 // Values for Spirograph
 float ring = 105;
 float wheel = 63;
-float hole = 5;
+float hole = 21;
 
-int paletteIndex = 0;
+int paletteIndex = 10;
 
 std::vector<sf::Color> palette = {
-  sf::Color(33, 60, 132, 10),
-  sf::Color(48, 88, 188, 10),
-  sf::Color(195, 175, 227, 10),
-  sf::Color(108, 86, 169, 10),
-  sf::Color(230, 102, 175, 10),
-  sf::Color(200, 85, 96, 10),
-  sf::Color(236, 102, 93, 10),
-  sf::Color(235, 73, 63, 10),
-  sf::Color(208, 128, 91, 10),
-  sf::Color(234, 180, 159, 10),
-  sf::Color(237, 211, 83, 10)
+  sf::Color(33, 60, 132, 20),
+  sf::Color(48, 88, 188, 20),
+  sf::Color(195, 175, 227, 20),
+  sf::Color(108, 86, 169, 20),
+  sf::Color(230, 102, 175, 20),
+  sf::Color(200, 85, 96, 20),
+  sf::Color(236, 102, 93, 20),
+  sf::Color(235, 73, 63, 20),
+  sf::Color(208, 128, 91, 20),
+  sf::Color(234, 180, 159, 20),
+  sf::Color(237, 211, 83, 20)
 };
 
 sf::Color fgColor = palette[paletteIndex];
@@ -32,11 +32,12 @@ sf::Color fxColor = sf::Color(200, 200, 200);
 
 // Width of the lines
 float lineWidth = 2;
+float paintWidth = 4;
 
 // Change speed with mouse wheel
-float speed = 180;
-float speedStep = 5;
-float maxSpeed = 360;
+float degreesPerFrame = 0.0;
+float degreesPerFrameStep = 0.1;
+float degreesPerFrameMax = 1;
 
 float lengthMultiplier;
 
@@ -57,7 +58,7 @@ int main() {
 
   for(uint i = 0; i < lines.size(); i++) {
     lines[i] = sf::RectangleShape();
-    lines[i].setRotation(270);
+    lines[i].rotate(90);
     lines[i].setFillColor(fxColor);
   }
   updateLines(lines);
@@ -65,19 +66,11 @@ int main() {
 
   // Move first line to screen center
   lines[0].setPosition(sf::Vector2f(dimensions.x/2, dimensions.y/2));
-  
-  bool linesVisible = true;
 
-  // Create Clock to measure time between frames
-  // And move accordingly
-  sf::Clock clock;
-  float elapsedTime;
+  bool linesVisible = true;
 
   // MAINLOOP
   while(window.isOpen()) {
-    // Get time since last check
-    elapsedTime = clock.restart().asSeconds();
-
     // Check for events
     sf::Event event;
     while(window.pollEvent(event)) {
@@ -87,63 +80,66 @@ int main() {
         case sf::Event::Closed:
           window.close();
           break;
-          // Scrollwheel to change speed
+          // Scrollwheel to change degreesPerFrame
         case sf::Event::MouseWheelScrolled:
           {
-            // Change speed by amount scrolled
-            speed += event.mouseWheelScroll.delta * speedStep;
+            // Change degreesPerFrame by amount scrolled
+            degreesPerFrame += event.mouseWheelScroll.delta * degreesPerFrameStep;
             // Check minimum and maximum
-            if(speed > maxSpeed) speed = maxSpeed ;
-            if(speed < 0) speed = 0;
+            if(degreesPerFrame > degreesPerFrameMax) degreesPerFrame = degreesPerFrameMax;
+            if(degreesPerFrame < 0) degreesPerFrame = 0;
 
-            // Hide lines if speed is 0
-            if(speed == 0) linesVisible = false;
+            // Hide lines if degreesPerFrame is 0
+            if(degreesPerFrame == 0) linesVisible = false;
             else linesVisible = true;
             break;
           }
         case sf::Event::KeyPressed:
           switch(event.key.code) {
             case sf::Keyboard::Space:
-            {
-              std::cout << "Please input: ring wheel hole" << std::endl;
-              std::cin >> ring;
-              std::cin >> wheel;
-              std::cin >> hole;
-              updateLines(lines);
+              linesVisible = !linesVisible;
               break;
-            }
+            case sf::Keyboard::Return:
+              {
+                std::cout << "Please input: ring wheel hole" << std::endl;
+                std::cin >> ring;
+                std::cin >> wheel;
+                std::cin >> hole;
+                updateLines(lines);
+                break;
+              }
             case sf::Keyboard::R:
-            {
-              std::cout << "Please input: ring" << std::endl;
-              std::cin >> ring;
-              updateLines(lines);
-              break;
-            }
+              {
+                std::cout << "Please input: ring" << std::endl;
+                std::cin >> ring;
+                updateLines(lines);
+                break;
+              }
             case sf::Keyboard::W:
-            {
-              std::cout << "Please input: wheel" << std::endl;
-              std::cin >> ring;
-              updateLines(lines);
-              break;
-            }
+              {
+                std::cout << "Please input: wheel" << std::endl;
+                std::cin >> ring;
+                updateLines(lines);
+                break;
+              }
             case sf::Keyboard::H:
-            {
-              std::cout << "Please input: hole" << std::endl;
-              std::cin >> hole;
-              updateLines(lines);
-              break;
-            }
+              {
+                std::cout << "Please input: hole" << std::endl;
+                std::cin >> hole;
+                updateLines(lines);
+                break;
+              }
             case sf::Keyboard::C:
-            {
-              std::cout << "Please input: r g b" << std::endl;
-              int r, g, b;
-              std::cin >> r >> g >> b;
-              fgColor = sf::Color(r, g, b);
-              break;
-            }
+              {
+                std::cout << "Please input: r g b" << std::endl;
+                int r, g, b;
+                std::cin >> r >> g >> b;
+                fgColor = sf::Color(r, g, b);
+                break;
+              }
             case sf::Keyboard::N:
-              fgColor = palette[++paletteIndex];
-              hole += 2;
+              fgColor = palette[--paletteIndex];
+              hole -= 2;
               updateLines(lines);
               break;
             default: break;
@@ -155,21 +151,21 @@ int main() {
 
     // LOGIC
 
-    // Rotate each line
-    lines[0].rotate(speed * elapsedTime);
-    lines[1].rotate(speed * -(ring - wheel) / wheel * elapsedTime);
-    lines[2].setRotation(lines[1].getRotation());
-    // Move each line
-    for(uint i = 1; i < lines.size(); i++) {
-      // Move position to the end of the previous line
-      lines[i].setPosition(getRotatedVector(lines[i-1], 1));
-    }
-    if(speed != 0) {
+    if(linesVisible != 0) {
+      // Rotate each line
+      lines[0].rotate(degreesPerFrame);
+      lines[1].rotate(degreesPerFrame * -(ring - wheel) / wheel);
+      lines[2].setRotation(lines[1].getRotation());
+      // Move each line
+      for(uint i = 1; i < lines.size(); i++) {
+        // Move position to the end of the previous line
+        lines[i].setPosition(getRotatedVector(lines[i-1], 1));
+      }
       sf::Vector2f pos = getRotatedVector(lines.back(), 1);
-      paint.append(sf::Vertex(sf::Vector2f(pos.x-3, pos.y), fgColor));
-      paint.append(sf::Vertex(sf::Vector2f(pos.x+3, pos.y), fgColor));
-      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y-3), fgColor));
-      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y+3), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x-paintWidth, pos.y), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x+paintWidth, pos.y), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y-paintWidth), fgColor));
+      paint.append(sf::Vertex(sf::Vector2f(pos.x, pos.y+paintWidth), fgColor));
     }
 
     // RENDER
@@ -202,7 +198,7 @@ sf::Vector2f getRotatedVector(sf::RectangleShape shape, int point) {
 }
 
 void updateLines(std::vector<sf::RectangleShape>& lines) {
-  float hole_temp = hole * 2.3;
+  float hole_temp = hole * 2.3 + 10;
   lines[0].setSize(sf::Vector2f((ring-wheel) * lengthMultiplier, lineWidth));
   lines[1].setSize(sf::Vector2f(wheel * lengthMultiplier, lineWidth));
   lines[2].setSize(sf::Vector2f(-hole_temp * lengthMultiplier, lineWidth));
