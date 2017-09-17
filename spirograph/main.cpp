@@ -19,7 +19,7 @@ float paintWidth = 2;
 std::ifstream configFile;
 
 // Change speed with mouse wheel
-float degreesPerFrame = 0.5;
+float degreesPerFrame = 1;
 float degreesPerFrameStep = 0.1;
 
 float lengthMultiplier;
@@ -63,8 +63,7 @@ int main() {
 
   // Create window
   sf::RenderWindow window(sf::VideoMode(dimensions.x, dimensions.y), "Spirograph");
-  // Limit framerate for debugging purpuses
-  window.setFramerateLimit(1);
+  window.setFramerateLimit(30);
 
   // Set rotation and color of all spirograph lines
   for(uint i = 0; i < lines.size(); i++) {
@@ -149,8 +148,8 @@ int main() {
       if(ringRotation >= rotation && wheelRotation >= rotation)
         std::cout << "SUCCESS" << std::endl;
     }
-    std::cout << lastRingRotation << " " << lastWheelRotation << " " << rotation << std::endl;
-    std::cout << ringRotation << " " << wheelRotation << "\n" << std::endl;
+    //std::cout << lastRingRotation << " " << lastWheelRotation << " " << rotation << std::endl;
+    //std::cout << ringRotation << " " << wheelRotation << "\n" << std::endl;
 
     lastRingRotation = ringRotation;
     lastWheelRotation = wheelRotation;

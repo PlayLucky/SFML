@@ -5,6 +5,7 @@ sf::Vector2i dimensions(800, 600);
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(dimensions.x, dimensions.y), "");
+  window.setFramerateLimit(30);
 
   while(window.isOpen()) {
     sf::Event event;
